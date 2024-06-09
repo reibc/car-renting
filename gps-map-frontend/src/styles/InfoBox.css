@@ -1,0 +1,19 @@
+.info-box {
+    background-color: #333333; /* Dark box color */
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Darker shadow */
+    color: #ffffff; /* Light text color */
+  }
+  
+  .info-box h3 {
+    margin: 0 0 10px 0;
+    color: #ffffff; /* Light text color */
+  }
+  
+  .info-box p {
+    margin: 0;
+    color: #ffffff; /* Light text color */
+  }
+  
