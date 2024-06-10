@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+const imageUrl = new URL('./assets/vite.svg', import.meta.url).href;
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import { useQuery } from 'react-query';
 
@@ -23,7 +24,6 @@ interface CoordinateData {
 }
 
 const fetchCoordinates = async (): Promise<Coordinate[]> => {
-    console.log('API Key:', import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY);
     const response = await fetch('http://localhost:5000/gps/coordinates/1');
     const data: CoordinateData[] = await response.json();
     return data.map(item => item.coordinates);
@@ -46,7 +46,8 @@ const MapComponent: React.FC = () => {
         },
         onError: (error) => {
             console.error('Error fetching coordinates: ', error);
-        }
+        },
+        refetchOnWindowFocus: false,
     });
 
     const fetchDirections = (coordinates: Coordinate[]) => {
@@ -76,7 +77,7 @@ const MapComponent: React.FC = () => {
     const handleLoad = () => {
         if (window.google && window.google.maps) {
             setCarIcon({
-                url: `${process.env.PUBLIC_URL}/car-icon.png`,
+                url: `${imageUrl}`,
                 scaledSize: new window.google.maps.Size(50, 50),
             });
             refetch();
