@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model bookings {
+  id       Int     @id(map: "Bookings_pkey") @default(autoincrement())
+  clientId Int
+  carId    Int
+  cars     cars    @relation(fields: [carId], references: [id], map: "Bookings_carId_fkey")
+  clients  clients @relation(fields: [clientId], references: [id], map: "Bookings_clientId_fkey")
+}
+
+model cars {
+  id          Int          @id(map: "Cars_pkey") @default(autoincrement())
+  model       String
+  VIN         String
+  Plate       String
+  Year        Int
+  isRented    Boolean @default(false)
+  bookings    bookings[]
+  carsDetails carsDetails?
+  rentals     rentals[]
+}
+
+model carsDetails {
+  id             Int    @id(map: "CarsDetails_pkey") @default(autoincrement())
+  carId          Int    @unique(map: "CarsDetails_carId_key")
+  Color          String
+  Specifications String
+  Completation   String
+  isFuel         Boolean @default(false)
+  capacityLevel  Int
+  cars           cars   @relation(fields: [carId], references: [id], map: "CarsDetails_carId_fkey")
+}
+
+model clients {
+  id          Int        @id(map: "Clients_pkey") @default(autoincrement())
+  name        String
+  phoneNumber String
+  IDNP        String
+  bookings    bookings[]
+  rentals     rentals[]
+}
+
+model rentals {
+  id       Int        @id(map: "Rentals_pkey") @default(autoincrement())
+  clientId Int
+  carId    Int
+  cars     cars       @relation(fields: [carId], references: [id], map: "Rentals_carId_fkey")
+  clients  clients    @relation(fields: [clientId], references: [id], map: "Rentals_clientId_fkey")
+  tracking tracking[]
+}
+
+model tracking {
+  id          Int      @id(map: "Tracking_pkey") @default(autoincrement())
+  rentalId    Int
+  timestamp   DateTime
+  fuel        Float
+  coordinates Json
+  rentals     rentals  @relation(fields: [rentalId], references: [id], map: "Tracking_rentalId_fkey")
+}

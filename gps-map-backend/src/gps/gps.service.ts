@@ -1,22 +1,29 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { UpdateCoordinatesDto } from './gps.dto';
 
 @Injectable()
 export class GpsService {
-    getCoordinates() {
-        return [
-            { lat: 47.40999898018636, lng: 28.368937138479076 },
-            { lat: 47.39490690075874, lng: 28.37638040899834},
-            { lat: 47.392669913205054, lng: 28.38573595278969}
-        ];
+    constructor(private prisma: PrismaService) {}
+
+    getCoordinates(id: number) {
+        return this.prisma.tracking.findMany({
+            where: { rentalId: id },
+            select: {
+                timestamp: true,
+                coordinates: true,
+            }
+        })
     }
 
-    getCars() {
-        return {
-            'name': 'car1',
-            'isFuel': true,
-            'isRented': false,
-            'timeLeft': 6000,
-        }
+    updateCoordinates(updateCoordinatesDto: UpdateCoordinatesDto) {
+        return this.prisma.tracking.create({
+            data: {
+                rentalId: updateCoordinatesDto.rentalId,
+                timestamp: updateCoordinatesDto.timestamp,
+                fuel: updateCoordinatesDto.fuel,
+                coordinates: updateCoordinatesDto.coordinates,
+            },
+        });
     }
 }
-

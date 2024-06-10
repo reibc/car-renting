@@ -1,17 +1,29 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { GpsService } from './gps.service';
+import { calculateAverageSpeed } from './calculateAverageSpeed';
+import { UpdateCoordinatesDto } from './gps.dto';
 
 @Controller('gps')
 export class GpsController {
     constructor(private readonly gpsService: GpsService) {}
 
-    @Get('coordinates')
-    getCoordinates() {
-        return this.gpsService.getCoordinates();
+    @Get('coordinates/speed/rental/:id')
+    async getAverageSpeed(@Param('id') id: string){
+        const carId = parseInt(id);
+        const data = await this.gpsService.getCoordinates(carId);
+        return parseFloat(calculateAverageSpeed(data).toFixed(2));
     }
 
-    @Get('cars')
-    getCards() {
-        return this.gpsService.getCars();
+    @Get('coordinates/rental/:id')
+    getCoordinates(@Param('id') id: string) {
+        const carId = parseInt(id);
+        return this.gpsService.getCoordinates(carId);
     }
+
+    @Post('coordinates/rental/update/')
+    updateCoordinates(
+        @Body() updateCoordinatesDto: UpdateCoordinatesDto) {
+        return this.gpsService.updateCoordinates(updateCoordinatesDto);
+    }
+
 }
