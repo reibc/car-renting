@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useQuery, QueryClient, QueryClientProvider } from 'react-query';
 import MapComponent from './MapComponent';
 import InfoPanel from './InfoPanel';
 import '../styles/App.css';
-import axios from 'axios';
 
 interface CarData {
     name: string;
@@ -10,25 +10,38 @@ interface CarData {
     timeLeft: number;
 }
 
+const queryClient = new QueryClient();
+
+const fetchCarData = async (): Promise<CarData> => {
+    const response = await fetch('http://localhost:5000/cars');
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+};
+
+const fetchAverageSpeed = async (): Promise<number> => {
+    const response = await fetch('http://localhost:5000/gps/averageSpeed/1');
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+};
+
 const App: React.FC = () => {
-    const [isFuel, setIsFuel] = useState<boolean | null>(null);
-    const [renter, setRenter] = useState<string | null>(null);
-    const [timeLeft, setTimeLeft] = useState<string>('0 minutes');
+    const { data: carData, error: carDataError, isLoading: carDataLoading } = useQuery<CarData>('carData', fetchCarData);
+    const { data: averageSpeed, error: averageSpeedError, isLoading: averageSpeedLoading } = useQuery<number>('averageSpeed', fetchAverageSpeed);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const result = await axios.get<CarData>('http://localhost:5000/gps/cars');
-                setRenter(result.data.name);
-                setIsFuel(result.data.isFuel);
-                setTimeLeft((result.data.timeLeft / 60).toFixed(2) + ' minutes');
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        };
+    if (carDataLoading || averageSpeedLoading) {
+        return <div>Loading...</div>;
+    }
 
-        fetchData();
-    }, []);
+    if (carDataError || averageSpeedError) {
+        console.error('Error fetching data:', carDataError || averageSpeedError);
+        return <div>Error fetching data</div>;
+    }
+
+    const timeLeft = carData ? (carData.timeLeft / 60).toFixed(2) + ' minutes' : '0 minutes';
 
     return (
         <div className="app-container">
@@ -37,13 +50,20 @@ const App: React.FC = () => {
             </div>
             <div className="info-container">
                 <InfoPanel
-                    renter={renter}
-                    isFuel={isFuel}
+                    renter={carData?.name || null}
+                    isFuel={carData?.isFuel || null}
                     timeLeft={timeLeft}
+                    averageSpeed={averageSpeed || null}
                 />
             </div>
         </div>
     );
 };
 
-export default App;
+const AppWrapper: React.FC = () => (
+    <QueryClientProvider client={queryClient}>
+        <App />
+    </QueryClientProvider>
+);
+
+export default AppWrapper;

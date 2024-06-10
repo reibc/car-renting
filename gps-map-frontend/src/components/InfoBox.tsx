@@ -3,7 +3,7 @@ import '../styles/InfoBox.css';
 
 interface InfoBoxProps {
     title: string;
-    value: string;
+    value: string | number;
 }
 
 const InfoBox: React.FC<InfoBoxProps> = ({ title, value }) => {

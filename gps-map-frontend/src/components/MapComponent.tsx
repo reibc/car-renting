@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { GoogleMap, LoadScript, Marker, DirectionsRenderer } from '@react-google-maps/api';
-import axios from 'axios';
+import { useQuery } from 'react-query';
 
 const containerStyle = {
     width: '100%',
@@ -17,31 +17,37 @@ interface Coordinate {
     lng: number;
 }
 
+interface CoordinateData {
+    timestamp: string;
+    coordinates: Coordinate;
+}
+
+const fetchCoordinates = async (): Promise<Coordinate[]> => {
+    console.log('API Key:', import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY);
+    const response = await fetch('http://localhost:5000/gps/coordinates/1');
+    const data: CoordinateData[] = await response.json();
+    return data.map(item => item.coordinates);
+};
+
 const MapComponent: React.FC = () => {
-    const [coordinates, setCoordinates] = useState<Coordinate[]>([]);
     const [mapCenter, setMapCenter] = useState(center);
     const [carIcon, setCarIcon] = useState<google.maps.Icon | undefined>(undefined);
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
 
-    const fetchCoordinates = useCallback(async () => {
-        try {
-            const response = await axios.get<Coordinate[]>('http://localhost:5000/gps/coordinates');
-            setCoordinates(response.data);
-            if (response.data.length > 0) {
+    const { data: coordinates = [], refetch } = useQuery('coordinates', fetchCoordinates, {
+        onSuccess: (coords) => {
+            if (coords.length > 0) {
                 setMapCenter({
-                    lat: response.data[0].lat,
-                    lng: response.data[0].lng,
+                    lat: coords[0].lat,
+                    lng: coords[0].lng,
                 });
-                fetchDirections(response.data);
+                fetchDirections(coords);
             }
-        } catch (error) {
+        },
+        onError: (error) => {
             console.error('Error fetching coordinates: ', error);
         }
-    }, []);
-
-    useEffect(() => {
-        fetchCoordinates();
-    }, [fetchCoordinates]);
+    });
 
     const fetchDirections = (coordinates: Coordinate[]) => {
         if (window.google && window.google.maps && coordinates.length > 1) {
@@ -68,16 +74,18 @@ const MapComponent: React.FC = () => {
     };
 
     const handleLoad = () => {
-        setCarIcon({
-            url: `${process.env.PUBLIC_URL}/car-icon.png`,
-            scaledSize: new window.google.maps.Size(50, 50),
-        });
-        fetchCoordinates();
+        if (window.google && window.google.maps) {
+            setCarIcon({
+                url: `${process.env.PUBLIC_URL}/car-icon.png`,
+                scaledSize: new window.google.maps.Size(50, 50),
+            });
+            refetch();
+        }
     };
 
     return (
         <LoadScript
-            googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY as string}
+            googleMapsApiKey={import.meta.env.VITE_APP_GOOGLE_MAPS_API_KEY}
             onLoad={handleLoad}
         >
             <GoogleMap
