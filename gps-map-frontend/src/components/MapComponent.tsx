@@ -28,7 +28,7 @@ interface MapComponentProps {
 }
 
 const fetchCoordinates = async (id: string): Promise<Coordinate[]> => {
-    const response = await fetch(`http://localhost:5000/gps/coordinates/rental/${id}`);
+    const response = await fetch(`http://localhost:80/gps/coordinates/rental/${id}`);
     const data: CoordinateData[] = await response.json();
     return data.map(item => JSON.parse(item.coordinates)); // Parse the coordinates string into an object
 };

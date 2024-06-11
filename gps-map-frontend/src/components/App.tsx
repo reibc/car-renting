@@ -38,7 +38,7 @@ interface TimeLeft {
 const queryClient = new QueryClient();
 
 const fetchCarData = async (id: string | undefined): Promise<CarData> => {
-    const response = await fetch(`http://localhost:5000/cars/${id}`);
+    const response = await fetch(`http://localhost:80/cars/${id}`);
     if (!response.ok) {
         throw new Error('Network response was not ok');
     }
@@ -46,7 +46,7 @@ const fetchCarData = async (id: string | undefined): Promise<CarData> => {
 };
 
 const fetchAverageSpeed = async (id: string | undefined): Promise<rideDetails> => {
-    const response = await fetch(`http://localhost:5000/gps/details/rental/${id}`);
+    const response = await fetch(`http://localhost:80/gps/details/rental/${id}`);
     if (!response.ok) {
         throw new Error('Network response was not ok');
     }
@@ -54,7 +54,7 @@ const fetchAverageSpeed = async (id: string | undefined): Promise<rideDetails> =
 };
 
 const fetchTimeLeft = async (id: string | undefined): Promise<TimeLeft> => {
-    const response = await fetch(`http://localhost:5000/rentals/${id}`);
+    const response = await fetch(`http://localhost:80/rentals/${id}`);
     if(!response.ok){
         throw new Error('Network response was not ok');
     }
