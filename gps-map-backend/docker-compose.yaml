@@ -3,7 +3,6 @@ version: '3.8'
 services:
   nginx:
     image: nginx:alpine
-    container_name: nginx
     ports:
       - "80:80"
     volumes:
@@ -29,7 +28,6 @@ services:
 
   citus_worker_1:
     image: citusdata/citus:10.2
-    container_name: citus_worker_1
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}

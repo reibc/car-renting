@@ -5,3 +5,6 @@
 
 2) Copy backup file to host:
 `docker cp postgres_container:/tmp/backup.sql ./backup.sql`
+
+3) Scale nginx to 3 workers and citus to 2
+`docker-compose up --scale nginx=3 --scale citus_worker_1=2`
