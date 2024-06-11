@@ -20,6 +20,7 @@ export class GpsController {
         const carId = parseInt(id);
         return this.gpsService.getCoordinates(carId);
     }
+    
     @Post('coordinates/rental/update/')
     @UseGuards(JwtAuthGuard)
     updateCoordinates(

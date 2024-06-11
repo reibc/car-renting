@@ -1,5 +1,7 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
 import { CarsService } from './cars.service';
+import { JwtAuthGuard } from 'auth/jwt-auth.guard';
+import { CarInformations } from './cars.dto';
 
 @Controller('cars')
 export class CarsController {
@@ -18,6 +20,12 @@ export class CarsController {
     @Get(':id')
     getCarById(@Param('id', ParseIntPipe) id: number) {
         return this.carsService.getCarById(id);
+    }
+
+    @Post('create')
+    @UseGuards(JwtAuthGuard)
+    createCar(@Body() carInformation: CarInformations) {
+        return this.carsService.createCar(carInformation);
     }
 
 }
