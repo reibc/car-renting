@@ -13,6 +13,8 @@ model bookings {
   carId    Int
   cars     cars    @relation(fields: [carId], references: [id], map: "Bookings_carId_fkey")
   clients  clients @relation(fields: [clientId], references: [id], map: "Bookings_clientId_fkey")
+  startDate DateTime
+  endDate   DateTime
 }
 
 model cars {
@@ -48,12 +50,14 @@ model clients {
 }
 
 model rentals {
-  id       Int        @id(map: "Rentals_pkey") @default(autoincrement())
-  clientId Int
-  carId    Int
-  cars     cars       @relation(fields: [carId], references: [id], map: "Rentals_carId_fkey")
-  clients  clients    @relation(fields: [clientId], references: [id], map: "Rentals_clientId_fkey")
-  tracking tracking[]
+  id        Int      @id @default(autoincrement())
+  clientId  Int
+  carId     Int
+  cars      cars     @relation(fields: [carId], references: [id])
+  clients   clients  @relation(fields: [clientId], references: [id])
+  startDate DateTime
+  endDate   DateTime
+  tracking  tracking[]
 }
 
 model tracking {

@@ -12,6 +12,9 @@ export class GpsService {
             select: {
                 timestamp: true,
                 coordinates: true,
+            },
+            orderBy:{
+                timestamp: 'asc',
             }
         })
     }

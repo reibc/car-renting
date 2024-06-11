@@ -20,21 +20,25 @@ interface Coordinate {
 
 interface CoordinateData {
     timestamp: string;
-    coordinates: Coordinate;
+    coordinates: string; // Adjusted to match the provided data format
 }
 
-const fetchCoordinates = async (): Promise<Coordinate[]> => {
-    const response = await fetch('http://localhost:5000/gps/coordinates/1');
+interface MapComponentProps {
+    id: string;
+}
+
+const fetchCoordinates = async (id: string): Promise<Coordinate[]> => {
+    const response = await fetch(`http://localhost:5000/gps/coordinates/rental/${id}`);
     const data: CoordinateData[] = await response.json();
-    return data.map(item => item.coordinates);
+    return data.map(item => JSON.parse(item.coordinates)); // Parse the coordinates string into an object
 };
 
-const MapComponent: React.FC = () => {
+const MapComponent: React.FC<MapComponentProps> = ({ id }) => {
     const [mapCenter, setMapCenter] = useState(center);
     const [carIcon, setCarIcon] = useState<google.maps.Icon | undefined>(undefined);
     const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
 
-    const { data: coordinates = [], refetch } = useQuery('coordinates', fetchCoordinates, {
+    const { data: coordinates = [], refetch } = useQuery(['coordinates', id], () => fetchCoordinates(id), {
         onSuccess: (coords) => {
             if (coords.length > 0) {
                 setMapCenter({
@@ -62,12 +66,13 @@ const MapComponent: React.FC = () => {
 
             const directionsService = new window.google.maps.DirectionsService();
 
-            directionsService.route({origin, destination, waypoints, travelMode: window.google.maps.TravelMode.DRIVING},
+            directionsService.route(
+                { origin, destination, waypoints, travelMode: window.google.maps.TravelMode.DRIVING },
                 (result, status) => {
                     if (status === window.google.maps.DirectionsStatus.OK) {
                         setDirections(result);
                     } else {
-                        console.error(`Error fetching directions: ${result}`);
+                        console.error(`Error fetching directions: ${status} - ${JSON.stringify(result)}`);
                     }
                 }
             );
@@ -116,6 +121,6 @@ const MapComponent: React.FC = () => {
             </GoogleMap>
         </LoadScript>
     );
-}
+};
 
 export default MapComponent;
