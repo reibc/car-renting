@@ -20,7 +20,7 @@ data = {
 # Headers (optional, depending on your API's requirements)
 headers = {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VyIiwic3ViIjoxLCJpYXQiOjE3MTgxMDQ3NTIsImV4cCI6MTcxODEwODM1Mn0.8nt8ZagjSqcKdQw2d4wsk8SF-8Cz8nWce9lliFBjzgs'  # If your API requires authentication
+    'Authorization': 'Bearer BearerToken'  # If your API requires authentication
 }
 
 response = requests.post(url, json=data, headers=headers)
