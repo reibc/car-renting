@@ -1,14 +1,25 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
 import { GpsModule } from './gps/gps.module';
 import { CarsModule } from './cars/cars.module';
-import rateLimit from 'express-rate-limit'; // Modificarea aici
+import { RentalsModule } from './rentals/rentals.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import rateLimit from 'express-rate-limit';
 
 @Module({
-    imports: [GpsModule, CarsModule],
-    controllers: [AppController],
-    providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    AuthModule,
+    GpsModule,
+    CarsModule,
+    RentalsModule,
+  ],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {

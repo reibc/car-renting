@@ -1,0 +1,72 @@
+services:
+  traefik:
+    image: traefik:v2.5
+    container_name: traefik
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.docker.exposedbydefault=false"
+    networks:
+      - citus
+
+  nginx:
+    image: nginx:alpine
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nginx.rule=Host(`localhost`)"
+      - "traefik.http.services.nginx.loadbalancer.server.port=80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+    networks:
+      - citus
+
+  citus_master:
+    image: citusdata/citus:10.2
+    container_name: citus_master
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    depends_on:
+      - citus_worker
+    networks:
+      - citus
+
+  citus_worker:
+    image: citusdata/citus:10.2
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+      - citus
+    
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+    deploy:
+      update_config:
+        parallelism: 2
+        delay: 10s
+    depends_on:
+      - citus_master
+    networks:
+      - citus
+
+networks:
+  citus:
+    driver: bridge

@@ -8,6 +8,12 @@ export interface DataPoint {
     coordinates: string; // coordinates are stringified JSON objects
 }
 
+export interface RideDetails {
+    totalDistance: number;
+    totalTimeHours: number;
+    averageSpeed: number;
+}
+
 function toRadians(degrees: number): number {
     return degrees * (Math.PI / 180);
 }
@@ -30,9 +36,9 @@ function haversineDistance(coord1: Coordinate, coord2: Coordinate): number {
     return R * c; // Distance in kilometers
 }
 
-export function calculateAverageSpeed(data: any): number {
+export function getRideDetails(data: any):RideDetails  {
     if (data.length < 2) {
-        return 0; // Not enough data points to calculate speed
+        return; // Not enough data points to calculate speed
     }
 
     let totalDistance = 0;
@@ -43,13 +49,26 @@ export function calculateAverageSpeed(data: any): number {
         const coord2: Coordinate = JSON.parse(data[i + 1].coordinates);
         const timestamp1 = new Date(data[i].timestamp).getTime();
         const timestamp2 = new Date(data[i + 1].timestamp).getTime();
-    
-        totalDistance += haversineDistance(coord1, coord2);
-        totalTime += (timestamp2 - timestamp1) / 1000; // Convert milliseconds to seconds
+
+        const distance = haversineDistance(coord1, coord2);
+        const time = (timestamp2 - timestamp1) / 1000;
+
+        if (time < 0) {
+            console.warn(`Negative time interval between points ${i} and ${i + 1}`);
+        }
+
+        totalDistance += distance;
+        totalTime += time;
     }
 
     const totalTimeHours = totalTime / 3600; // Convert seconds to hours
+
+    if (totalTimeHours <= 0) {
+        console.error(`Total time is non-positive: ${totalTimeHours} hours`);
+        return;
+    }
+
     const averageSpeed = totalDistance / totalTimeHours; // Speed in km/h
 
-    return averageSpeed;
+    return { totalDistance, totalTimeHours, averageSpeed }
 }

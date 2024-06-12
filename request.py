@@ -17,13 +17,13 @@ data = {
     "coordinates": json.dumps({"lat": 38.7749, "lng": -125.4194})
 }
 
-# # Headers (optional, depending on your API's requirements)
-# headers = {
-#     'Content-Type': 'application/json',
-#     'Authorization': 'Bearer YOUR_ACCESS_TOKEN'  # If your API requires authentication
-# }
+# Headers (optional, depending on your API's requirements)
+headers = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer BearerToken'  # If your API requires authentication
+}
 
-response = requests.post(url, json=data)
+response = requests.post(url, json=data, headers=headers)
 
 # Check the response
 if response.status_code == 200:

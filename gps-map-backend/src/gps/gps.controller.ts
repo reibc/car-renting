@@ -1,17 +1,18 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { GpsService } from './gps.service';
-import { calculateAverageSpeed } from './calculateAverageSpeed';
+import { getRideDetails } from './getRideDetails'
 import { UpdateCoordinatesDto } from './gps.dto';
+import { JwtAuthGuard } from 'auth/jwt-auth.guard';
 
 @Controller('gps')
 export class GpsController {
     constructor(private readonly gpsService: GpsService) {}
 
-    @Get('coordinates/speed/rental/:id')
-    async getAverageSpeed(@Param('id') id: string){
+    @Get('details/rental/:id')
+    async details(@Param('id') id: string){
         const carId = parseInt(id);
         const data = await this.gpsService.getCoordinates(carId);
-        return parseFloat(calculateAverageSpeed(data).toFixed(2));
+        return getRideDetails(data);
     }
 
     @Get('coordinates/rental/:id')
@@ -19,8 +20,9 @@ export class GpsController {
         const carId = parseInt(id);
         return this.gpsService.getCoordinates(carId);
     }
-
+    
     @Post('coordinates/rental/update/')
+    @UseGuards(JwtAuthGuard)
     updateCoordinates(
         @Body() updateCoordinatesDto: UpdateCoordinatesDto) {
         return this.gpsService.updateCoordinates(updateCoordinatesDto);
