@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@nestjs/core": "^10.3.9",
+    "@nestjs/platform-express": "^10.3.9",
+    "express-rate-limit": "^7.3.1"
+  }
+}
