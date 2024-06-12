@@ -12,12 +12,12 @@ import rateLimit from 'express-rate-limit'; // Modificarea aici
 })
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
-        // Limitare la 100 de cereri pe oră pentru fiecare adresă IP
+        // Limit to 100 requests per hour per IP address
         consumer.apply(rateLimit({
-            windowMs: 60 * 60 * 1000, // 1 oră
-            max: 100, // limita de cereri
-            message: 'Prea multe cereri de la această adresă IP, încearcă mai târziu.'
-        }) as any).forRoutes('*'); // Aplicarea limitării la toate rutele
+            windowMs: 60 * 60 * 1000, // 1 hour
+            max: 100, // request limit
+            message: 'Too many requests from this IP address, try again later.'
+        }) as any).forRoutes('*'); // Applying the restriction to all routes
     }
 }
 

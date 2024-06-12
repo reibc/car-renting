@@ -2,6 +2,7 @@
   "dependencies": {
     "@nestjs/core": "^10.3.9",
     "@nestjs/platform-express": "^10.3.9",
+    "@ngx-translate/core": "^15.0.0",
     "express-rate-limit": "^7.3.1"
   }
 }
