@@ -14,7 +14,8 @@
     - [X] '/gps/coordinations/rental/update' - POSTs the car location
     - [X] '/rentals/time-left/{rentalId}' - get the timeleft for the current rental
 * [X] Update front-end with the data from all the routes
-* [ ] Create docker images for backend
-* [ ] Implement load balance for the server using nginx
-* [ ] Implement load balance for the database using citus
+* [X] Create docker images for backend
+* [X] Implement load balance for the server using nginx
+* [X] Implement load balance for the database using citus
 * [X] Authentication or token verification
+* [ ] Automated backup
