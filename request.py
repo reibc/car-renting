@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 url = 'http://localhost:80/gps/coordinates/rental/update'
 headers = {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RVc2VyIiwic3ViIjoxLCJpYXQiOjE3MTgxMTg1MDksImV4cCI6MTcxODEyMjEwOX0.B6XTGw2m8b7o-KCDHa-6PR4414QLsxTCSCX9XfEKYFE'  # If your API requires authentication
+    'Authorization': 'Bearer '
 }
 
 def updateRental(id, coords):
