@@ -4,11 +4,15 @@ services:
     container_name: traefik
     ports:
       - "80:80"
+      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--providers.docker.exposedbydefault=false"
     networks:
       - citus
 
