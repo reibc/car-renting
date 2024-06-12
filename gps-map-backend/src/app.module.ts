@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { GpsModule } from './gps/gps.module';
@@ -26,7 +26,7 @@ export class AppModule implements NestModule {
         // Limit to 100 requests per hour per IP address
         consumer.apply(rateLimit({
             windowMs: 60 * 60 * 1000, // 1 hour
-            max: 100, // request limit
+            max: 100000, // request limit
             message: 'Too many requests from this IP address, try again later.'
         }) as any).forRoutes('*'); // Applying the restriction to all routes
     }
